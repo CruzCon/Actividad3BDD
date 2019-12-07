@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style type="text/css">
+            button, input, textarea{display:block; width:90%; height:35px; margin:10px auto; }
+            input{ text-align:center; font-size:15px; color:#666; }
+            </style>
+        
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+    function  onBodyLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+            }
+    function  onDeviceReady() {
+       alert("La aplicacion esta corriendo")
+    }
+
+    function createFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+
+   function successCallback(fs) {
+      fs.root.getFile('log.txt', {create: true, exclusive: true}, function(fileEntry) {
+         alert('Archivo creado!');
+      }, errorCallback);
+   }
+
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+    
+}
+
+function writeFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+
+   function successCallback(fs) {
+      fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+
+         fileEntry.createWriter(function(fileWriter) {
+            fileWriter.onwriteend = function(e) {
+               alert('Texto escrito.');
+            };
+
+            fileWriter.onerror = function(e) {
+               alert('Fallo escritura: ' + e.toString());
+            };
+
+            var blob = new Blob(['Practica en PhoneGap File'], {type: 'text/plain'});
+            fileWriter.write(blob);
+         }, errorCallback);
+      }, errorCallback);
+   }
+
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+}
+
+function readFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+
+   function successCallback(fs) {
+      fs.root.getFile('log.txt', {}, function(fileEntry) {
+
+         fileEntry.file(function(file) {
+            var reader = new FileReader();
+
+            reader.onloadend = function(e) {
+               var txtArea = document.getElementById('textarea');
+               txtArea.value = this.result;
+            };
+            reader.readAsText(file);
+         }, errorCallback);
+      }, errorCallback);
+   }
+
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+}
+
+function removeFile() {
+   var type = window.TEMPORARY;
+   var size = 5*1024*1024;
+   window.requestFileSystem(type, size, successCallback, errorCallback)
+
+   function successCallback(fs) {
+      fs.root.getFile('log.txt', {create: false}, function(fileEntry) {
+
+         fileEntry.remove(function() {
+            alert('Archivo borrado.');
+         }, errorCallback);
+      }, errorCallback);
+   }
+
+   function errorCallback(error) {
+      alert("ERROR: " + error.code)
+   }
+} 
+</script>
+    </head>
+    <body >
+        
+        <button onclick="createFile()"> Crear archivo </button>
+        
+        <hr>
+        
+       <textarea id = "textarea" ></textarea>
+        <button  onclick="writeFile()"> Escribir en archivo </button>
+        
+        <hr>
+        
+        <button onclick="readFile()"> Leer archivo </button>
+        
+        <hr>
+        
+        <button onclick="leerInfo()"> Leer Metadata </button>
+        
+        <hr>
+        
+        <button  onclick="removeFile()"> Borrar archivo</button>
+        
+        <hr>
+        
+        
+    </body>
+</html>
